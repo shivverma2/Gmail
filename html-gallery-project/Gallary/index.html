@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Gallery</title>
+    <style>
+        .navbar {
+            width: 100%;
+            background: #222;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 56px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar .logo {
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 24px;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar li {
+            display: inline-block;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .navbar a:hover {
+            color: #ffb347;
+        }
+        .navbar .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+        }
+        .navbar .bar {
+            height: 4px;
+            width: 100%;
+            background: #fff;
+            margin: 4px 0;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        @media (max-width: 700px) {
+            .navbar ul {
+                position: absolute;
+                top: 56px;
+                left: 0;
+                width: 100%;
+                background: #222;
+                flex-direction: column;
+                gap: 0;
+                display: none;
+            }
+            .navbar ul.active {
+                display: flex;
+            }
+            .navbar li {
+                padding: 16px 0;
+                text-align: center;
+                border-bottom: 1px solid #333;
+            }
+            .navbar .menu-toggle {
+                display: flex;
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .slider-container {
+            max-width: 700px;
+            margin: 30px auto 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+            background: #fff;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 3;
+            transition: background 0.2s;
+        }
+        .fullscreen-btn:hover {
+            background: #222;
+        }
+        .slider {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(.77,0,.18,1);
+        }
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .slide img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            font-size: 2rem;
+            padding: 0 16px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        .slider-btn.left {
+            left: 10px;
+        }
+        .slider-btn.right {
+            right: 10px;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bbb;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+        .slider-dot.active {
+            background: #333;
+        }
+        @media (max-width: 800px) {
+            .slider-container {
+                max-width: 98vw;
+            }
+            .slide img {
+                height: 200px;
+            }
+        }
+        @media (max-width: 600px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                padding: 10px;
+            }
+            .gallery-item img {
+                height: 100px;
+            }
+            .slide img {
+                height: 120px;
+            }
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #fff;
+            transition: transform 0.2s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.07);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            transition: filter 0.3s;
+        }
+        .gallery-item:hover img {
+            filter: brightness(0.7) blur(1px);
+        }
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            text-align: center;
+            padding: 8px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .gallery-item:hover .caption {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">My Gallery</div>
+        <div class="menu-toggle" id="menuToggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul id="navLinks">
+            <li><a href="#slider">Slider</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <h1 style="text-align:center; margin-top:30px;">JavaScript Image Gallery</h1>
+    <div class="slider-container">
+        <button class="slider-btn left" id="prevBtn">&#10094;</button>
+        <button class="fullscreen-btn" id="fullscreenBtn" title="Fullscreen">&#x26F6;</button>
+        <div class="slider" id="slider"></div>
+        <button class="slider-btn right" id="nextBtn">&#10095;</button>
+        <div class="slider-dots" id="sliderDots"></div>
+    </div>
+    <div class="gallery" id="gallery"></div>
+    <script>
+
+        // Fullscreen functionality for slider container
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        fullscreenBtn.onclick = () => {
+            const sliderContainer = document.querySelector('.slider-container');
+            if (sliderContainer.requestFullscreen) {
+                sliderContainer.requestFullscreen();
+            } else if (sliderContainer.webkitRequestFullscreen) {
+                sliderContainer.webkitRequestFullscreen();
+            } else if (sliderContainer.msRequestFullscreen) {
+                sliderContainer.msRequestFullscreen();
+            }
+        };
+        // Navbar mobile toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        menuToggle.onclick = () => {
+            navLinks.classList.toggle('active');
+        };
+
+        // Array of 30 image URLs (Unsplash and Picsum)
+        const images = [
+            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101178521-c1a2b3a8a5c6?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101178521-c1a2b3a8a5c6?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1465101178521-c1a2b3a8a5c6?auto=format&fit=crop&w=400&q=80',
+            'https://picsum.photos/id/1015/400/300',
+            'https://picsum.photos/id/1016/400/300',
+            'https://picsum.photos/id/1018/400/300',
+            'https://picsum.photos/id/1020/400/300',
+            'https://picsum.photos/id/1024/400/300',
+            'https://picsum.photos/id/1025/400/300',
+            'https://picsum.photos/id/1027/400/300',
+            'https://picsum.photos/id/1033/400/300',
+            'https://picsum.photos/id/1035/400/300',
+            'https://picsum.photos/id/1037/400/300',
+            'https://picsum.photos/id/1040/400/300',
+            'https://picsum.photos/id/1041/400/300',
+            'https://picsum.photos/id/1042/400/300',
+            'https://picsum.photos/id/1043/400/300',
+            'https://picsum.photos/id/1044/400/300'
+        ];
+
+        // Gallery
+        const gallery = document.getElementById('gallery');
+        images.forEach((src, idx) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = `Image ${idx+1}`;
+            const caption = document.createElement('div');
+            caption.className = 'caption';
+            caption.textContent = `Image ${idx+1}`;
+            item.appendChild(img);
+            item.appendChild(caption);
+            gallery.appendChild(item);
+        });
+
+        // Slider
+        const slider = document.getElementById('slider');
+        const sliderDots = document.getElementById('sliderDots');
+        let currentSlide = 0;
+
+        function renderSlider() {
+            slider.innerHTML = '';
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            const img = document.createElement('img');
+            img.src = images[currentSlide];
+            img.alt = `Slide ${currentSlide+1}`;
+            slide.appendChild(img);
+            slider.appendChild(slide);
+            slider.style.transform = `translateX(0)`;
+        }
+
+        function renderDots() {
+            sliderDots.innerHTML = '';
+            images.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = 'slider-dot' + (idx === currentSlide ? ' active' : '');
+                dot.onclick = () => {
+                    currentSlide = idx;
+                    updateSlider();
+                };
+                sliderDots.appendChild(dot);
+            });
+        }
+
+        function updateSlider() {
+            renderSlider();
+            renderDots();
+        }
+
+        document.getElementById('prevBtn').onclick = () => {
+            currentSlide = (currentSlide - 1 + images.length) % images.length;
+            updateSlider();
+        };
+        document.getElementById('nextBtn').onclick = () => {
+            currentSlide = (currentSlide + 1) % images.length;
+            updateSlider();
+        };
+
+        // Swipe support for mobile
+        let startX = null;
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+        slider.addEventListener('touchend', (e) => {
+            if (startX === null) return;
+            let endX = e.changedTouches[0].clientX;
+            if (endX - startX > 50) {
+                document.getElementById('prevBtn').click();
+            } else if (startX - endX > 50) {
+                document.getElementById('nextBtn').click();
+            }
+            startX = null;
+        });
+
+        updateSlider();
+    </script>
+</body>
+</html>
